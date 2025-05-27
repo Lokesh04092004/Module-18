@@ -22,35 +22,72 @@ Also, initialize a matrix `aux3` to store the cube of the adjacency matrix (i.e.
 
 ## PYTHON PROGRAM
 
-```
+def multiply(A, B, C):
 
-import numpy as np
+	global V
+ 
+	for i in range(V):
+ 
+		for j in range(V):
+  
+			C[i][j] = 0
+   
+			for k in range(V):
+   
+				C[i][j] += A[i][k] * B[k][j]
+    
+def getTrace(graph):
 
-def count_triangles(graph):
-    adj_matrix = np.array(graph)
+	global V
+ 
+	trace = 0
+ 
+	for i in range(V):
+ 
+		trace += graph[i][i]
+  
+	return trace
+ 
+def triangleInGraph(graph):
 
-    aux2 = np.matmul(adj_matrix, adj_matrix)
-    aux3 = np.matmul(aux2, adj_matrix)
+	global V
+ 
+	aux2 = [[None] * V for i in range(V)]
 
-    trace = np.trace(aux3)
-    triangle_count = trace // 6
+	aux3 = [[None] * V for i in range(V)]
 
-    return triangle_count
+	for i in range(V):
+ 
+		for j in range(V):
+  
+			aux2[i][j] = aux3[i][j] = 0
 
-graph = [
-    [0, 1, 1, 0],
-    [1, 0, 1, 1],
-    [1, 1, 0, 1],
-    [0, 1, 1, 0]
-]
+	multiply(graph, graph, aux2)
+	    
+	multiply(aux2, graph, aux3)
+ 
+	trace=getTrace(aux3)
 
-print("Number of triangles:", count_triangles(graph))
+	return trace//6
+ 
+V = int(input())
 
-```
+graph = [[0, 1, 1, 0],
+
+		[1, 0, 1, 1],
+  
+		[1, 1, 0, 1],
+  
+		[0, 1, 1, 0]]
+
+print("Total number of Triangle in Graph :",
+
+					triangleInGraph(graph))
+
 
 ## OUTPUT
+![image](https://github.com/user-attachments/assets/f9cbc15e-fdbb-4ce7-a529-347f7d3d3d69)
 
-![image](https://github.com/user-attachments/assets/a1128ce5-68fb-4580-8b98-32ec9387f2a7)
 
 ## RESULT
-Thus, the python function to accept a string, identify a word to be replaced, and replace it with a new word provided by the user has been executed and verified successfully.
+Thus,  a Python program to **count the number of triangles** present in an **undirected graph** using matrix operations was implemented successfully.
