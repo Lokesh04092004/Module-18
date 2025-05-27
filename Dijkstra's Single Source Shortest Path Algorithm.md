@@ -1,155 +1,103 @@
 
-# Ex. No: 18E - KRUSKAL’S ALGORITHM FOR MINIMUM SPANNING TREE (MST) IN PYTHON
+# Ex. No: 18C - Dijkstra's Single Source Shortest Path Algorithm
 
 ## AIM:
-To write a Python program using Kruskal’s Algorithm to find the Minimum Spanning Tree (MST) of a given connected, undirected, and weighted graph.
+To write a Python program for **Dijkstra's single source shortest path algorithm**.
 
 ## ALGORITHM:
 
-Input the number of vertices and edges of the graph.
+**Step 1**: Initialize a `distance[]` array with infinity for all vertices except the source, which is set to `0`.  
+Create a `sptSet[]` array (shortest path tree set) to keep track of vertices whose shortest distance from the source is finalized.
 
-Create a list of edges, where each edge is represented as a tuple: (u, v, weight).
+**Step 2**: Pick the vertex `u` with the minimum distance value from the set of vertices not yet processed.
 
-Sort all edges in non-decreasing order based on their weights.
+**Step 3**: For every adjacent vertex `v` of the picked vertex `u`, if the current distance to `v` is greater than the distance to `u` plus the edge weight `(u, v)`, then update the distance of `v`.
 
-Initialize the parent and rank arrays for union-find operations:
+**Step 4**: Mark the vertex `u` as processed in `sptSet`.
 
-parent[i] = i for each vertex.
+**Step 5**: Repeat Steps 2–4 until all vertices are processed.
 
-rank[i] = 0 initially.
-
-Iterate over the sorted edges and for each edge:
-
-Use the find() function to check the root parents of the two vertices.
-
-If they belong to different sets, include the edge in MST and perform union operation to merge the sets.
-
-Repeat the above step until the MST has V - 1 edges (where V is the number of vertices).
-
-Display the edges in the MST and calculate the total weight (cost) of the MST.
+**Step 6**: Print the shortest distances from the source to all other vertices.
 
 ## PYTHON PROGRAM
 
 ```
-from collections import defaultdict
+# Python program for Dijkstra's single source shortest path algorithm. 
+# The program is for adjacency matrix representation of the graph
 
-# Class to represent a graph
+# Library for INT_MAX
+import sys
 
-
-class Graph:
+class Graph():
 
 	def __init__(self, vertices):
-		self.V = vertices # No. of vertices
-		self.graph = [] # default dictionary
-		# to store graph
+		self.V = vertices
+		self.graph = [[0 for column in range(vertices)]
+					for row in range(vertices)]
 
-	# function to add an edge to graph
-	def addEdge(self, u, v, w):
-		self.graph.append([u, v, w])
-
-	# A utility function to find set of an element i
-	# (uses path compression technique)
-	def find(self, parent, i):
-		if parent[i] == i:
-			return i
-		return self.find(parent, parent[i])
-
-	# A function that does union of two sets of x and y
-	# (uses union by rank)
-	def union(self, parent, rank, x, y):
-		xroot = self.find(parent, x)
-		yroot = self.find(parent, y)
-
-		# Attach smaller rank tree under root of
-		# high rank tree (Union by Rank)
-		if rank[xroot] < rank[yroot]:
-			parent[xroot] = yroot
-		elif rank[xroot] > rank[yroot]:
-			parent[yroot] = xroot
-
-		# If ranks are same, then make one as root
-		# and increment its rank by one
-		else:
-			parent[yroot] = xroot
-			rank[xroot] += 1
-
-	# The main function to construct MST using Kruskal's
-		# algorithm
-	def KruskalMST(self):
-
-		result = [] # This will store the resultant MST
-		
-		# An index variable, used for sorted edges
-		i = 0
-		
-		# An index variable, used for result[]
-		e = 0
-
-		# Step 1: Sort all the edges in
-		# non-decreasing order of their
-		# weight. If we are not allowed to change the
-		# given graph, we can create a copy of graph
-		self.graph = sorted(self.graph,
-							key=lambda item: item[2])
-
-		parent = []
-		rank = []
-
-		# Create V subsets with single elements
+	def printSolution(self, dist):
+		print("Vertex   Distance from Source")
 		for node in range(self.V):
-		    parent.append(node)
-		    rank.append(0)
-		     #---Code Here----
-		
-		# Number of edges to be taken is equal to V-1
-		while e<self.V-1:
-		    u,v,w=self.graph[i]
-		    i+=1
-		    x=self.find(parent,u)
-		    y=self.find(parent,v)
-		    if x!=y:
-		        e+=1
-		        result.append([u,v,w])
-		        self.union(parent,rank,x,y)
-		minimumCost=0
-		print("Edges in the constructed MST")
-		for u,v,weight in result:
-		    minimumCost+=weight
-		    print("%d -- %d == %d"%(u,v,weight))
-		print("Minimum Spanning Tree",minimumCost)
-		    
+			print(node, "           ", dist[node])
 
-			# Step 2: Pick the smallest edge and increment
-			# the index for next iteration
-			        
-			        #---Code Here----
+	# A utility function to find the vertex with
+	# minimum distance value, from the set of vertices
+	# not yet included in shortest path tree
+	def minDistance(self, dist, sptSet):
 
-			# If including this edge doesn't
-			# cause cycle, include it in result
-			# and increment the indexof result
-			# for next edge
-			            
-			            
-			            #---Code Here----
+		# Initialize minimum distance for next node
+		min = sys.maxsize
 
-		
+		# Search not nearest vertex not in the
+		# shortest path tree
+		for u in range(self.V):
+			if dist[u] < min and sptSet[u] == False:
+				min = dist[u]
+				min_index = u
 
-# Driver code
-g = Graph(4)
-g.addEdge(0, 1, 10)
-g.addEdge(0, 2, 6)
-g.addEdge(0, 3, 5)
-g.addEdge(1, 3, 15)
-g.addEdge(2, 3, 4)
+		return min_index
 
-# Function call
-g.KruskalMST()
+	# Function that implements Dijkstra's single source
+	# shortest path algorithm for a graph represented
+	# using adjacency matrix representation
+	def dijkstra(self, src):
+
+		dist = [sys.maxsize] * self.V
+		dist[src] = 0
+		sptSet = [False] * self.V
+
+		for cout in range(self.V):
+		    x=self.minDistance(dist,sptSet)
+		    sptSet[x]=True
+		    for y in range(self.V):
+		        if self.graph[x][y]>0 and sptSet[y]==False and dist[y]>self.graph[x][y]+dist[x]:
+		            dist[y]=self.graph[x][y]+dist[x]
+			
+
+		self.printSolution(dist)
+
+# Driver program
+g = Graph(9)
+g.graph = [[0, 4, 0, 0, 0, 0, 0, 8, 0],
+		[4, 0, 8, 0, 0, 0, 0, 11, 0],
+		[0, 8, 0, 7, 0, 4, 0, 0, 2],
+		[0, 0, 7, 0, 6, 14, 0, 0, 0],
+		[0, 0, 0, 6, 0, 5, 0, 0, 0],
+		[0, 0, 4, 14, 5, 0, 2, 0, 0],
+		[0, 0, 0, 0, 0, 2, 0, 1, 6],
+		[8, 11, 0, 0, 0, 0, 1, 0, 7],
+		[0, 0, 2, 0, 0, 0, 6, 7, 0]
+		];
+
+g.dijkstra(0);
+
+
 
 
 ```
 
 ## OUTPUT
-![Screenshot (282)](https://github.com/user-attachments/assets/ea00e8d1-8809-4c02-a39f-6d9ee454a193)
+![Screenshot (280)](https://github.com/user-attachments/assets/b110b9d9-6aa9-4b8f-bab7-1bf06dc0d196)
 
 
 ## RESULT
